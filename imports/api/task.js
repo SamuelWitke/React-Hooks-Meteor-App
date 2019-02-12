@@ -1,8 +1,40 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { check } from 'meteor/check';
+import SimpleSchema from 'simpl-schema';
+
 
 const Tasks = new Mongo.Collection('tasks');
+
+const tasksSchema = new SimpleSchema({
+  text: {
+    type: String,
+    label: "Text"
+  },
+  createdAt: {
+    type: Date,
+    label: "Created At",
+    autoValue: () => new Date()
+  },
+  owner: {
+    type: String,
+    label: "Owner",
+    autoValue: () => this.userId
+  },
+  username: { type: String },
+  checked: { 
+    type: Boolean,
+    optional: true,
+   },
+  private: { 
+    type: Boolean,
+    optional: true,
+
+  }
+})
+
+Tasks.attachSchema(tasksSchema);
+
 
 if (Meteor.isServer) {
   // This code only runs on the server
@@ -22,12 +54,11 @@ Meteor.methods({
     check(text, String);
 
     // Make sure the user is logged in before inserting a task
-    if (! this.userId) {
+    if (!this.userId) {
       throw new Meteor.Error('not-authorized');
     }
-
     Tasks.insert({
-      text,
+          text,
       createdAt: new Date(),
       owner: this.userId,
       username: Meteor.users.findOne(this.userId).username,

@@ -42,7 +42,6 @@ export default ({ tasks, currentUser, incompleteCount }) => {
                 Hide Completed Tasks
                 {renderTasks(tasks, on, currentUser)}
             </label>
-
         </div>
     )
 }
